@@ -1,0 +1,169 @@
+# Utilities
+numpy    # numpy arrays are faster as compared to python lists 
+pandas   # used for tabular operations
+
+
+# Used in Face Recognition
+scikit-learn 
+dlib-bin
+# dlib-20.0.99-cp314-cp314-win_amd64.whl
+
+# Here we will install this face recognition model which to used to create embeddings for face
+# As dlib gives us structures or algorithms to create rectangle aroung face i.e to know how face looks
+# But to know each and every details of face i.e distances and all, we need to use these face recogniton models
+# Here this is not some python package but written by someone and available in github, so we need to install it directly from github like this :-
+# git+   and then link of that github repo
+git+https://github.com/ageitgey/face_recognition_models
+# But as this is not some direct python package, so to use this we need to download this 'setuptools' library
+setuptools<70.0.0
+# This pins the version of setuptools to below 70.0.0.
+# setuptools is the Python packaging library that helps install and build packages.
+# Some packages (like face_recognition_models or dlib) may break with newer versions, so developers restrict it to a safe range.
+
+
+supabase    # provides free and fast database
+bscript     # bscript provides hashing methods
+
+
+segno   # library used to create QR code from URL
+pillow   # library used to preprocess the images in python like resize image, flip image etc
+
+
+streamlit   # basic frontend library
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Here we need to named this file as "requirements.txt" only because it is convention
+# As during deployment using Streamlit, streamlit searches for this 'requirements.txt' file to install all the libraries required 
+# A requirements.txt file is used to list all the Python packages your project depends on, so anyone can recreate the same environment easily.
+
+# To recreate the environment on another machine :-
+#---------------OR---------------------
+# To install the libraries that we want, we can write them in this "requirements.txt" file then do this :-
+# pip install -r requirements.txt
+
+
+# Dlib :-
+# Dlib is a popular open‑source toolkit for machine learning and computer vision, best known for its face detection and facial landmark recognition capabilities. It’s written in C++ but has a Python API, making it widely used in AI projects like attendance systems, identity verification, and biometric applications.
+## Core Library: A C++ toolkit with Python bindings.
+## Focus Areas: Machine learning, image processing, computer vision, and numerical optimization.
+## Python Use: You can install it via pip install dlib (though on Windows it often requires precompiled wheels or Visual Studio build tools).
+
+# Key Features :-
+# - Face Detection: Includes HOG (Histogram of Oriented Gradients) + SVM detector and CNN‑based detector.
+# - Facial Landmark Detection: Pretrained models can detect 68 facial landmarks (eyes, nose, mouth, jawline).
+# - Face Recognition: Provides embeddings for comparing and verifying identities.
+# - Object Detection: Tools for training custom object detectors.
+# - ML Algorithms: Includes SVMs, k‑means clustering, and other classical ML methods.
+# - Optimization Tools: Useful for training models and solving mathematical problems.
+
+
+
+# Wheels :-
+# In Python packaging, wheels are a type of built distribution format — essentially pre‑built, ready‑to‑install packages.
+# A wheel is a binary package format with the extension .whl.
+# Instead of compiling source code using various internal tools during installation, wheels provide precompiled code.
+# They make installation faster and more reliable, especially for libraries with heavy C/C++ dependencies (like dlib, numpy, scipy).
+
+# Why Wheels Matter :-
+# Speed → Installing from a wheel is much faster than building from source.
+# Convenience → No need for compilers or build tools (important on Windows).
+# Compatibility → Wheels are built for specific Python versions and platforms (e.g., cp310 for CPython 3.10, win_amd64 for Windows 64‑bit).
+
+# If you install a package with pip:vpip install numpy
+# Pip will first look for a wheel (numpy‑1.26.4‑cp310‑cp310‑win_amd64.whl).
+# If found, it installs instantly.
+# If not, pip falls back to source (setup.py), which requires compilation.
+
+# Common Use Case :- Libraries like dlib often provide wheels because compiling them from source can be tricky (requires CMake, Visual Studio, etc.). That’s why you’ll see instructions like “install the precompiled wheel for dlib” on Windows.
+
+
+# dlib-bin :-
+# dlib-bin usually refers to a precompiled binary distribution of the Dlib library packaged as a wheel (.whl).
+# Dlib is written in C++ and requires compilation with tools like CMake and Visual Studio on Windows. Compiling from source can be painful, especially for beginners.
+# To solve this, maintainers or community contributors provide dlib-bin wheels — prebuilt binaries that you can install directly with pip, without needing to compile.
+
+# dlib-bin is a convenience package that lets you install Dlib without dealing with compilation headaches.
+
+
+# dlib-20.0.99-cp314-cp314-win_amd64.whl :-
+# It  is a wheel file specifically built for a certain Python version and operating system. 
+# dlib‑20.0.99 → The version of Dlib (20.0.99).
+# cp314 → Stands for CPython 3.14 (so it only works with Python 3.14).
+# win_amd64 → Built for Windows 64‑bit systems.
+# .whl → Wheel file format (precompiled binary).
+
+# When to Use It :-
+# You should install this wheel if:
+# You are running Python 3.14 (CPython).
+# You are on Windows 64‑bit.
+# You want to avoid compiling Dlib from source (which requires CMake/Visual Studio).
+
+# SO we can install it directly using :- python -m pip install dlib-20.0.99-cp314-cp314-win_amd64.whl
+# But we will use this only when dlib-bin is not working.
+
+
+
+# Face embeddings :-
+# Face embeddings are numerical representations of a person’s face, used in machine learning and computer vision for recognition and verification.
+# A face embedding is a vector of numbers (often 128–512 dimensions) generated by a deep neural network.
+# It captures the unique features of a face (shape of eyes, nose, mouth, jawline, etc.) in a way that makes it easy to compare faces mathematically.
+# Think of it as a “fingerprint” of the face, but in numerical form.
+
+# How They Work :-
+# - Input Image → A face image is fed into a trained model (like FaceNet, Dlib, or DeepFace).
+# - Feature Extraction → The model processes the image and outputs a vector (embedding).
+# Example: [0.12, -0.45, 0.87, ... , 0.33]  # 128 numbers
+# - Comparison → To check if two faces are the same, you compare their embeddings using a distance metric (like Euclidean distance or cosine similarity).
+## Small distance → Same person.
+## Large distance → Different people.
+
+
+# Here we will install this face recognition model which to used to create embeddings for face
+# As dlib gives us structures or algorithms to create rectangle aroung face i.e to know how face looks
+# But to know each and every details of face i.e distances and all, we need to use these face recogniton models
+# Here this is not some python package but written by someone and available in github, so we need to install it directly from github like this :-
+# git+   and then link of that github repo
+# git+https://github.com/ageitgey/face_recognition_models
+# But as this is not some direct python package, so to use this we need to download this 'setuptools' library
+# setuptools<70.0.0
+# This pins the version of setuptools to below 70.0.0.
+# setuptools is the Python packaging library that helps install and build packages.
+# Some packages (like face_recognition_models or dlib) may break with newer versions, so developers restrict it to a safe range.
+
+
+
+# Supabase :-
+# What it is: An open‑source backend‑as‑a‑service (BaaS).
+# Core idea: It gives you a Postgres database + authentication + storage + APIs out of the box.
+
+# Why it’s popular:
+# Instant REST and GraphQL APIs for your database.
+# Built‑in user authentication (email, OAuth, etc.).
+# File storage and edge functions.
+
+
+
+# hasing :-
+# Hashing = converting data (like a password, file, or string) into a fixed‑length digest using algorithms (SHA‑256, SHA‑512, etc.).
+# bscript includes functions to perform these hashing operations, often used for:
+# Data integrity → verifying that data hasn’t been altered.
+# Authentication → storing hashed passwords securely.
+# Blockchain/crypto contexts → hashing transactions or scripts.
+# General utilities → quick checksums or unique IDs.
+
+
+# Streamlit :-
+# Streamlit is an open‑source Python framework designed to make it easy to build and share data apps, dashboards, and interactive machine learning demos with just a few lines of code.
+
+# What Streamlit does :-
+# - Lets you turn a Python script into a web app instantly.
+# - Focuses on simplicity — you don’t need HTML, CSS, or JavaScript.
+# - Perfect for data scientists, ML engineers, and analysts who want to showcase models or visualizations interactively.
+
+# Key Features :-
+# - Widgets: Sliders, buttons, text inputs, file uploaders.
+# - Charts: Native support for Matplotlib, Plotly, Altair, and more.
+# - Live updates: Apps auto‑refresh when you change code.
+# - Deployment: Easy to share via Streamlit Cloud or run locally.
