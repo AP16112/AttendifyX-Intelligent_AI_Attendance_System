@@ -56,9 +56,9 @@ def style_base_layout():
         <style>
             /*Here we are importing some font-style from google font to use in this project*/
             /*We will use this font for headings.*/
-            @import url('https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&family=Fugaz+One&family=Outfit:wght@100..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap');
             /*We will use this font for remaining body of our project.*/
-            @import url('https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&family=Outfit:wght@100..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
             /* Hide Top Bar of streamlit */
             #MainMenu, footer, header {
@@ -71,6 +71,12 @@ def style_base_layout():
                 
             /*Now for these deault h1 tags which are used in heading, we will use our custom font-style from google fonts*/
             /*In streamlit actually, st.title() uses <h1> tags internally, st.header("...") uses <h2> tag, st.subheader("...") uses <h3> tags actually*/
+            
+            /*Now we will override the font-style for default h3, h4, p, tags of streamlit*/
+            h3, h4, p {
+                font-family: 'Outfit', sans-serif !important;
+            }
+                
             h1{
                 font-family: 'Fugaz One', sans-serif !important;
                 font-size: 3.5rem !important;
@@ -80,16 +86,11 @@ def style_base_layout():
                 
             h2 {
                 font-family: 'Fugaz One', sans-serif !important;
-                color: #1e1e1e !important;   /* Slightly black (dark gray) */
                 font-size: 2rem !important;
                 line-height: 0.9 !important
                 margin-bottom: 0rem !important;
             }
                 
-            /*Now we will override the font-style for default h3, h4, p, tags of streamlit*/
-            h3, h4, p {
-                font-family: 'Outfit', sans-serif !important;
-            }
                 
             /*Now we will give custom styling for primary, secondary and tertiary type buttons of streamlit*/
             /*So to select the any type of default button of streamlit, we need to write this way i.e by using kind="" */

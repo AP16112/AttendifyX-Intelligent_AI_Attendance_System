@@ -30,7 +30,7 @@ from src.screens.teacher_screen import teacher_screen
 def main():
     # Initialization of session store
     # Check if 'key' i.e here 'login_type' already exists in session_state
-    # If not, then initialize it
+    # If not, then initialize it because by-default this session_state is empty like a blank dictionary i.e session_state={}, so we need to initialize it with some key-value pair before using it
     if 'login_type' not in st.session_state:
         st.session_state['login_type'] = None
     # ----------------OR-----------------
@@ -143,6 +143,24 @@ main()
 # Widget State: Widgets (like st.text_input, st.slider) automatically save their current value in st.session_state.
 
 # Statefulness lets you build interactive apps that remember user choices, cache results, or maintain progress.
+
+
+# Supabase :-
+# We will use this as database here.
+# Supabase is an open‑source backend platform built on PostgreSQL that provides developers with a ready‑to‑use database, authentication, APIs, storage, and real‑time features — essentially a Firebase alternative but powered by Postgres. 
+# It’s designed to let you spin up a backend in minutes and scale to millions of users without managing servers.
+
+
+# Core Features of Supabase :-
+# Postgres Database  :- Every project comes with a full PostgreSQL instance, one of the most trusted relational databases.
+# Authentication  :- Built‑in user sign‑ups and logins with support for email, OAuth, and Row Level Security (RLS).
+# Instant APIs  :- Auto‑generated REST and GraphQL APIs for your database tables.
+# Realtime Subscriptions  :- Enables live data sync for apps like chat, dashboards, or multiplayer games.
+# Edge Functions  :- Serverless functions you can deploy without managing infrastructure.
+# Storage  :- Manage and serve large files (images, videos, documents).
+# Vector Embeddings  :- Store and query ML embeddings for AI applications (integrates with OpenAI, Hugging Face, LangChain).
+
+
 
 
 

@@ -14,7 +14,7 @@ dlib-bin
 # Here this is not some python package but written by someone and available in github, so we need to install it directly from github like this :-
 # git+   and then link of that github repo
 git+https://github.com/ageitgey/face_recognition_models
-# But as this is not some direct python package, so to use this we need to download this 'setuptools' library
+# But as this is not some direct python package as we are installing it from github, so to use this we need to download this 'setuptools' library
 setuptools<70.0.0
 # This pins the version of setuptools to below 70.0.0.
 # setuptools is the Python packaging library that helps install and build packages.
@@ -27,7 +27,7 @@ bscript     # bscript provides hashing methods
 
 segno   # library used to create QR code from URL
 pillow   # library used to preprocess the images in python like resize image, flip image etc
-
+# So whenever we want to work with images in python, we need to use this library as it provides us with many functions to work with images
 
 streamlit   # basic frontend library
 
@@ -71,7 +71,7 @@ streamlit   # basic frontend library
 # Convenience → No need for compilers or build tools (important on Windows).
 # Compatibility → Wheels are built for specific Python versions and platforms (e.g., cp310 for CPython 3.10, win_amd64 for Windows 64‑bit).
 
-# If you install a package with pip:vpip install numpy
+# If you install a package with pip: pip install numpy
 # Pip will first look for a wheel (numpy‑1.26.4‑cp310‑cp310‑win_amd64.whl).
 # If found, it installs instantly.
 # If not, pip falls back to source (setup.py), which requires compilation.
