@@ -150,6 +150,9 @@ main()
 # Supabase is an open‑source backend platform built on PostgreSQL that provides developers with a ready‑to‑use database, authentication, APIs, storage, and real‑time features — essentially a Firebase alternative but powered by Postgres. 
 # It’s designed to let you spin up a backend in minutes and scale to millions of users without managing servers.
 
+# Supabase itself is not a database but it provides the instance of p sql i.e (PostgreSQL) database to the developers, so that they can use that database for their projects without worrying about the backend part of it. It also provides some other features like authentication, APIs, storage, real-time features, etc which are required in the backend of any project, so that developers can focus on the frontend part of their project and can easily integrate this supabase with their frontend without worrying about the backend part of it.
+# PostgreSQL and MySQL are almost same but PostgreSQL is more advanced and has more features than MySQL, so it is more preferred by developers. Supabase provides the instance of PostgreSQL database to the developers, so that they can use that database for their projects without worrying about the backend part of it. It also provides some other features like authentication, APIs, storage, real-time features, etc which are required in the backend of any project, so that developers can focus on the frontend part of their project and can easily integrate this supabase with their frontend without worrying about the backend part of it.
+
 
 # Core Features of Supabase :-
 # Postgres Database  :- Every project comes with a full PostgreSQL instance, one of the most trusted relational databases.
@@ -161,6 +164,9 @@ main()
 # Vector Embeddings  :- Store and query ML embeddings for AI applications (integrates with OpenAI, Hugging Face, LangChain).
 
 
+# JSONB format in PostgreSQL :-
+# JSONB is a data type in PostgreSQL that allows you to store JSON (JavaScript Object Notation) data in a binary format. It provides efficient storage and querying capabilities for JSON data, making it ideal for applications that need to handle semi-structured or unstructured data. With JSONB, you can easily store and manipulate complex data structures without needing to define a rigid schema, while still benefiting from indexing and fast access.
+# JSONB is a PostgreSQL data type that stores JSON (JavaScript Object Notation) data in a binary format rather than plain text.
 
 
 
