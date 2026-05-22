@@ -64,7 +64,7 @@ def style_base_layout():
             #MainMenu, footer, header {
                 visibility: hidden;
             }   
-                
+             
             .block-container {
                 padding-top: 1.5rem !important;
             }
@@ -94,9 +94,10 @@ def style_base_layout():
                 
             /*Now we will give custom styling for primary, secondary and tertiary type buttons of streamlit*/
             /*So to select the any type of default button of streamlit, we need to write this way i.e by using kind="" */
-            button {      /*  OR  button[kind="primary"] {  */
+            /*  OR  button[kind="primary"] {  */
+            button {             /* applies to ALL buttons */  
                 border-radius: 1.5rem !important;
-                background: #5865F2 !important; 
+                background-color: #5865F2 !important; 
                 color: white !important;
                 padding: 10px 20px !important;
                 border: none !important;
@@ -105,7 +106,7 @@ def style_base_layout():
                 
             button[kind="secondary"] {
                 border-radius: 1.5rem !important;
-                background: #EB459E !important; 
+                background-color: #EB459E !important; 
                 color: white !important;
                 padding: 10px 20px !important;
                 border: none !important;
@@ -114,7 +115,7 @@ def style_base_layout():
                 
             button[kind="tertiary"] {
                 border-radius: 1.5rem !important;
-                background: black !important; 
+                background-color: black !important; 
                 color: white !important;
                 padding: 10px 20px !important;
                 border: none !important;

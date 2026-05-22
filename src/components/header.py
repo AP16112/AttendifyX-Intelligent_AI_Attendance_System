@@ -3,9 +3,6 @@
 
 # Here this file contains the header components for all the pages
 
-from ast import If
-
-from altair import When
 import streamlit as st
 
 # Here this fn will define the header for home page only
@@ -36,7 +33,7 @@ def header_dashboard():
     st.markdown(f"""
         <div style='display: flex;  align-items: center;  justify-content: center;   gap: 10px;'>
             <img src='{logo_url}'  style='height:85px'>
-            <h2 style='text-align: left; color: #5865F2;'>AttendifyX</h2>
+            <h2 style='display:flex; text-align: left; justify-content: center; color: #5865F2;'>AttendifyX</h2>
         </div>
         """,
         unsafe_allow_html=True
