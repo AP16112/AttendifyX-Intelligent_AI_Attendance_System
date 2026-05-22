@@ -5,7 +5,7 @@ pandas   # used for tabular operations
 
 # Used in Face Recognition
 scikit-learn 
-dlib-bin
+dlib-bin    # it will actually install the dlib library without the need of compiling it from source code, as dlib is written in C++ and it requires compilation which can be difficult for some users, so dlib-bin provides precompiled binaries that can be installed directly using pip, making it easier to use dlib in Python projects, especially on Windows where compiling can be tricky.
 # dlib-20.0.99-cp314-cp314-win_amd64.whl
 
 # Here we will install this face recognition model which to used to create embeddings for face
@@ -22,7 +22,7 @@ setuptools<70.0.0
 
 
 supabase    # provides free and fast database
-bscript     # bscript provides hashing methods
+bcrypt     # bcrypt is a password hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher. It’s widely used for securely hashing passwords in applications, as it incorporates a salt to protect against rainbow table attacks and is computationally intensive to thwart brute-force attacks. In Python, you can use the bcrypt library to easily hash and verify passwords using this algorithm.
 
 
 segno   # library used to create QR code from URL
@@ -30,6 +30,16 @@ pillow   # library used to preprocess the images in python like resize image, fl
 # So whenever we want to work with images in python, we need to use this library as it provides us with many functions to work with images
 
 streamlit   # basic frontend library
+
+# So librosa is used for audio processing i.e editing the audio files, converting them into segments, noice reduction etc, while resemblyzer is used to convert the audio files into embeddings and then comparing those embeddings to check that two audio files are of same person or not, so both these libraries are used together for voice recognition in our project
+librosa     # library used for audio processing in python, it provides us with many functions to work with audio files like loading audio files, extracting features from audio files etc
+# Here installing this resemblyzer using requirements.txt file is not working, so we will install it directly with wheels.
+# resemblyzer  # library used for voice recognition in python, it provides us with many functions to work with audio files like extracting features from audio files, comparing audio files etc
+webrtcvad-wheels==2.0.14   # use wheels version instead of source build
+# so now we need to do this after installing this :- pip install -r requirements.txt
+# pip uninstall webrtcvad -y
+# pip install webrtcvad-wheels==2.0.14
+# pip install resemblyzer --no-deps
 
 
 
