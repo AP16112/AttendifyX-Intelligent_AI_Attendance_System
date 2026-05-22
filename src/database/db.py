@@ -104,3 +104,44 @@ def get_teacher_subjects(teacher_id):
 
 
 
+# so this fn student will enroll a student in some subject
+def enroll_student_to_subject(student_id, subject_id):
+    data = {'student_id': student_id, 'subject_id': subject_id}
+
+    # so it will add this data object to this 'subject_students' table which means that this student gets enrolled in this subject
+    response = supabase.table('subject_students').insert(data).execute()
+
+    response.data  # it will return the data of the newly created subject student record
+
+
+# so this fn student will unenroll a student from some subject
+def unenroll_student_from_subject(student_id, subject_id):
+    # so it will delete that row from this 'subject_students' table which have this student id and subject id
+    response = supabase.table('subject_students').delete().eq('student_id', student_id).eq('subject_id', subject_id).execute()
+
+    response.data  # it will return the data of this deleted record
+
+
+# this fn will return the list of all the subjects this particular student enrolled in
+def get_student_subjects(student_id):
+    # Query the 'subject_students' table and also join related data from the 'subjects' table.
+    # select('*, subjects(*)') → fetches all columns from subject_students (*) and expands the subjects table (*) for each matching record
+    # eq('student_id', student_id) → filters rows so only those belonging to the given student_id are returned
+    # execute() → runs the query and returns the result (data + error if any)
+    response = supabase.table('subject_students').select('*, subjects(*)').eq('student_id', student_id).execute()
+    # This query retrieves all subject enrollment records for a particular student from the subject_students table, and at the same time pulls in the full details of each subject from the subjects table. The result is a combined dataset showing which subjects the student is enrolled in along with the subject information itself.
+
+    return response.data   # it will return the list of all subjects student enrolled in & also full details of each those subjects also
+
+
+# that fn is designed to pull attendance records for each subject the student is enrolled in.
+def get_student_attendance(student_id):
+    # Query the 'attendance_logs' table and also join related data from the 'subjects' table.
+    # select('*, subjects(*)') → fetches all columns from attendance_logs (*) and expands the subjects table (*) for each matching record
+    # eq('student_id', student_id) → filters rows so only attendance records belonging to the given student_id are returned
+    # execute() → runs the query and returns the result (data + error if any)
+    response = supabase.table('attendance_logs').select('*, subjects(*)').eq('student_id', student_id).execute()
+
+    # This query retrieves all attendance records for a particular student from the attendance_logs table, and at the same time pulls in the full details of each subject from the subjects table.
+    # The result is a combined dataset showing the student's attendance history along with subject information.
+    return response.data   # returns a list of attendance records with full subject details

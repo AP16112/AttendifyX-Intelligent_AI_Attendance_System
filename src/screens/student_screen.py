@@ -17,12 +17,16 @@ import numpy as np  # here we are importing numpy library which is used for nume
 
 from src.pipelines.face_pipeline import get_face_embeddings, predict_attendance, train_classifier     # here we are importing this predict_attendance() function from this face_pipeline.py file, which will contain the code for facial recognition and attendance marking, so here we will use this predict_attendance() function to process the image taken from camera input for facial recognition and attendance marking, so here we are importing this function in this student_screen.py file because we will use this function in this file to process the image taken from camera input for facial recognition and attendance marking, so that we can mark the attendance of the student who is trying to login using FaceID on the student screen of our app.
 from src.pipelines.voice_pipeline import get_voice_embedding
-from src.database.db import get_all_students, create_student      # here we are importing this get_all_students() function from this db.py file, which will contain the code for interacting with the database to get the list of all the student records from the students table in the database, so here we will use this get_all_students() function to get the list of all the student records from the students table in the database, so here we are importing this function in this student_screen.py file because we will use this function in this file to get the list of all the student records from the students table in the database, so that we can compare that list of student records with the face detected from the image taken from camera input for facial recognition and attendance marking, so that we can mark the attendance of the student who is trying to login using FaceID on the student screen of our app.
+from src.database.db import get_all_students, create_student, get_student_subjects, get_student_attendance, unenroll_student_from_subject            # here we are importing this get_all_students() function from this db.py file, which will contain the code for interacting with the database to get the list of all the student records from the students table in the database, so here we will use this get_all_students() function to get the list of all the student records from the students table in the database, so here we are importing this function in this student_screen.py file because we will use this function in this file to get the list of all the student records from the students table in the database, so that we can compare that list of student records with the face detected from the image taken from camera input for facial recognition and attendance marking, so that we can mark the attendance of the student who is trying to login using FaceID on the student screen of our app.
 import time   # here we are importing this time library which is used for time related operations in python, so here we will use this library to add some delay after the student is successfully logged in using FaceID on the student screen of our app, so that we can show the welcome message to the student for some time before rerunning the app to show the dashboard for logged in student, so here we are importing this library in this student_screen.py file because we will use this library in this file to add some delay after the student is successfully logged in using FaceID on the student screen of our app, so that we can show the welcome message to the student for some time before rerunning the app to show the dashboard for logged in student.
+
+from src.components.dialog_enroll import enroll_dialog
+from src.components.subject_card import subject_card
 
 
 def student_dashboard():
     student_data = st.session_state.student_data  # here this student_data session variable will contain the data of the currently logged in student, so we can use this data to show the student name on the dashboard screen and also we can use this data to fetch the attendance data of that student from the database and then we can show that attendance data on the dashboard screen to the student
+    student_id = student_data['student_id']
 
     c1, c2 = st.columns(2, vertical_alignment='center', gap='large')
 
@@ -49,9 +53,88 @@ def student_dashboard():
 
     st.space()
 
+    c1, c2 = st.columns(2)
+
+    with c1:
+        # st.header("Your Enrolled Subjects")    # it just uses the default h2 tag 
+        # ---------OR------------
+        st.markdown(f"""
+            <div style='display: flex;  align-items: center;  justify-content: center;'>
+                <h2 style='color: #1e1e1e;  text-align: left'> Your Enrolled Subjects </h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        ) 
+
+    with c2: 
+        if st.button('Enroll in subject', type='primary', width='stretch'):
+            enroll_dialog()
+
+
+    st.divider()
+
+    # here we are adding this spinner as we know that adding this query will be very long as it will show the list of all subjects student enrolled in
+    with st.spinner("Loading your enrollled subjects..."):
+        # here it will show all the subjects and also the attendance logs for showing how many classes attended by student in each subjects
+        subjects = get_student_subjects(student_id)    # it will give list of subjects with nested dictionaries containing each subject details
+        logs = get_student_attendance(student_id)
+
+
+    # In this we will map the total & attended classes for each subjects for any particular student
+    stats_map = {}
+
+    for log in logs:
+        sid = log['subject_id']   
+
+        if sid not in stats_map:    # it means this subject is coming first time, then we will add this subject_id in this stats_map
+            stats_map[sid] = {"total": 0, "attended": 0}      # as this is new subject, so no classes happened for this currently
+
+
+        # but if this sid already exists in stats_map, then this subject exists & if again it is present in attendance log then it means that this subject class happens whether student attended that class or not
+        stats_map[sid]['total'] += 1    # so total classes count increase
+
+        if log.get('is_present'):   # if this is true, then it means that student attended that class
+            stats_map[sid]['attended'] += 1     # so attended class count also increase by 1 
+
+
+    # Create two equal-width columns side by side in the Streamlit app
+    # it will we in the form of list here 
+    cols = st.columns(2)
+
+    # enumerate(subjects) → produces (index, subject) pairs.
+    # i → the numeric position of the subject in the list.
+    # sub_node → the actual subject object/item.
+    for i, sub_node in enumerate(subjects):
+        sub = sub_node['subjects']
+        sid = sub['subject_id']
+
+        # as we are using get() here, so we also need to provide some fallback also i.e which we get when get doesn't find anything to return
+        stats = stats_map.get(sid, {"total": 0, "attended": 0})      # here this {"total": 0, "attended": 0} is actually the fallback
+
+
+        # here we are creating a unenroll button for each subject, so that it can execute the uneroll query to unenroll the student from any subject
+        def unenroll_button():
+            if st.button("Unenroll from this course", type='tertiary', width='stretch', icon=':material/delete_forever:'):
+                unenroll_student_from_subject(student_id, sid)
+                st.toast(f"Unenrolled from {sub['name']} successfully! ")
+                st.rerun()    # here we are rerunning so that whole page gets reloaded
+                
+
+        with cols[i % 2]:    # here it is used to switch between column 0 and 1
+            subject_card(
+                name = sub['name'],
+                code = sub['subject_code'],
+                section = sub['section'],
+                stats = [
+                    ('📅', 'Total', stats['total']),
+                    ('✅', 'Attended', stats['attended']),
+                ],
+                footer_callback = unenroll_button
+            )
+
+
 
     footer_dashboard()
-
 
 
 
