@@ -18,7 +18,7 @@ import io   # it is used to handle the binary data
 
 @st.dialog("Share Class Link")   # here this st.dialog() is used to create a dialog box with the title "Share Class Link"
 def share_subject_dialog(subject_name, subject_code):   
-    app_domain = "http://localhost:8501/"    # it means that this is our app URL or link
+    app_domain = "http://localhost:8501"    # it means that this is our app URL or link
     join_url = f"{app_domain}/?join-code={subject_code}"    # this is the main URL or link for joining the current subject class
 
     # st.header("Scan to Join")     # it just uses the default h2 tag 

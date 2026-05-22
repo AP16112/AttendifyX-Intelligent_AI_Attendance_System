@@ -26,6 +26,8 @@ from src.screens.home_screen import home_screen
 from src.screens.student_screen import student_screen
 from src.screens.teacher_screen import teacher_screen 
 
+from src.components.dialog_auto_enroll import auto_enroll_dialog
+
 
 def main():
     # Initialization of session store
@@ -50,6 +52,20 @@ def main():
 
         case None:
             home_screen()    # it will render the home screen
+
+
+    # st.query_params → gives you access to the query parameters in the app’s URL (like ?join-code=12345).
+    # .get('join-code') → fetches the value associated with the key "join-code" if it exists.
+    join_code = st.query_params.get('join-code')
+
+    if join_code:   # it this exists, then it means that someone is trying to enroll in this subject using this URL
+        if st.session_state.login_type != 'student':
+            st.session_state.login_type = 'student'
+            st.rerun()
+        
+        #  If the user is logged in and their role is 'student', automatically trigger the enrollment dialog using the join_code (extracted from the URL query parameters). This enables deep-link enrollment so students can join directly via a shared link.
+        if st.session_state.get('is_logged_in') and st.session_state.get('user_role') == 'student':
+            auto_enroll_dialog(join_code)
 
 
 main()
