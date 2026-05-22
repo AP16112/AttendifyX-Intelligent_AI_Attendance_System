@@ -9,17 +9,24 @@
 
 
 .env
-.vscode     # it stores temporary files of vscode
+.vscode     
+# it stores temporary files of vscode
 
 
-*.pyc      # it store all the runtime cache files of python, so we don't need to push this on github
-.DS_store    # it is for mac users
-__pycache__/    # here / means folder i.e __pycache__ folder
+*.pyc      
+# it store all the runtime cache files of python, so we don't need to push this on github
+
+.DS_Store    
+# it is for mac users
+
+__pycache__/    
+# here / means folder i.e __pycache__ folder
 
 
 venv/
 
-.streamlit/     # all the environment variable of streamlit are not kept in .env file but kept in a secret file called as 'secrets.toml' inside this .streamlit folder
+.streamlit/     
+# all the environment variable of streamlit are not kept in .env file but kept in a secret file called as 'secrets.toml' inside this .streamlit folder
 # So here we are ignoring the whole .streamlit folder because it contains that secrets.toml file which is a secret file and we don't want to push it on github, so we are ignoring the whole .streamlit folder  
 
 dist/
