@@ -37,6 +37,7 @@ librosa     # library used for audio processing in python, it provides us with m
 # Here installing this resemblyzer using requirements.txt file is not working, so we will install it directly with wheels.
 # resemblyzer  # library used for voice recognition in python, it provides us with many functions to work with audio files like extracting features from audio files, comparing audio files etc
 webrtcvad-wheels==2.0.14   # use wheels version instead of source build
+resemblyzer==0.1.4
 # so now we need to do this after installing this :- pip install -r requirements.txt
 # pip uninstall webrtcvad -y
 # pip install webrtcvad-wheels==2.0.14
