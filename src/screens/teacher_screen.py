@@ -14,7 +14,7 @@ from src.components.dialog_create_subject import create_subject_dialog
 from src.components.dialog_share_subject import share_subject_dialog
 from src.components.dialog_add_photo import add_photos_dialog
 from src.components.dialog_attendance_results import attendance_result_dialog
-
+from src.components.dialog_voice_attendance import voice_attendance_dialog
 
 import numpy as np
 import pandas as pd
