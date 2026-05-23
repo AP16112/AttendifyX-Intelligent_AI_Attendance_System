@@ -2,7 +2,7 @@
 streamlit   # basic frontend library
 
 # Utilities
-numpy    # numpy arrays are faster as compared to python lists 
+numpy==1.26.4    # numpy arrays are faster as compared to python lists 
 pandas   # used for tabular operations
 
 
@@ -33,7 +33,10 @@ pillow   # library used to preprocess the images in python like resize image, fl
 # So whenever we want to work with images in python, we need to use this library as it provides us with many functions to work with images
 
 # So librosa is used for audio processing i.e editing the audio files, converting them into segments, noice reduction etc, while resemblyzer is used to convert the audio files into embeddings and then comparing those embeddings to check that two audio files are of same person or not, so both these libraries are used together for voice recognition in our project
-librosa     # library used for audio processing in python, it provides us with many functions to work with audio files like loading audio files, extracting features from audio files etc
+# librosa     # library used for audio processing in python, it provides us with many functions to work with audio files like loading audio files, extracting features from audio files etc
+numba==0.59.0 
+llvmlite==0.42.0 
+librosa==0.10.1
 # Here installing this resemblyzer using requirements.txt file is not working, so we will install it directly with wheels.
 # resemblyzer  # library used for voice recognition in python, it provides us with many functions to work with audio files like extracting features from audio files, comparing audio files etc
 webrtcvad-wheels==2.0.14   # use wheels version instead of source build
@@ -43,7 +46,9 @@ resemblyzer==0.1.4
 # pip install webrtcvad-wheels==2.0.14
 # pip install resemblyzer --no-deps
 
-
+torch==2.2.2 
+torchvision==0.17.2 
+torchaudio==2.2.2
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Here we need to named this file as "requirements.txt" only because it is convention
