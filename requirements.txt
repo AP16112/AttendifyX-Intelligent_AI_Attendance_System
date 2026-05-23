@@ -1,3 +1,6 @@
+# We need to write this at the top if we want to deploy this project using streamlit because 90% streamlit deployment fails if we write this streamlit below on requirements.txt file
+streamlit   # basic frontend library
+
 # Utilities
 numpy    # numpy arrays are faster as compared to python lists 
 pandas   # used for tabular operations
@@ -28,8 +31,6 @@ bcrypt     # bcrypt is a password hashing function designed by Niels Provos and 
 segno   # library used to create QR code from URL
 pillow   # library used to preprocess the images in python like resize image, flip image etc
 # So whenever we want to work with images in python, we need to use this library as it provides us with many functions to work with images
-
-streamlit   # basic frontend library
 
 # So librosa is used for audio processing i.e editing the audio files, converting them into segments, noice reduction etc, while resemblyzer is used to convert the audio files into embeddings and then comparing those embeddings to check that two audio files are of same person or not, so both these libraries are used together for voice recognition in our project
 librosa     # library used for audio processing in python, it provides us with many functions to work with audio files like loading audio files, extracting features from audio files etc

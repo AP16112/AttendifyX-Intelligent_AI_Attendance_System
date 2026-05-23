@@ -30,6 +30,11 @@ from src.components.dialog_auto_enroll import auto_enroll_dialog
 
 
 def main():
+    st.set_page_config(
+        page_title="AttendifyX : Intelligent AI Attendance System",     # page_title sets the browser tab title
+        page_icon="https://i.ibb.co/YTYGn5qV/logo.png",        # small icon visible before this page_title
+    )
+
     # Initialization of session store
     # Check if 'key' i.e here 'login_type' already exists in session_state
     # If not, then initialize it because by-default this session_state is empty like a blank dictionary i.e session_state={}, so we need to initialize it with some key-value pair before using it

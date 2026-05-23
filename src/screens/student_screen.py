@@ -270,7 +270,7 @@ def student_screen():
                                 train_classifier()
                                 st.session_state.is_logged_in = True   # here we are setting this is_logged_in variable in session state to true, so that we can use this variable to check whether the student is logged in or not in other parts of our app, so that we can show the appropriate content to the student based on whether they are logged in or not, so here we are setting this variable to true when the student is successfully logged in using FaceID on the student screen of our app.
                                 st.session_state.user_role = "student"   # here we are setting this user_role variable in session state to "student", so that we can use this variable to check the role of the user in other parts of our app, so that we can show the appropriate content to the user based on their role, so here we are setting this variable to "student" when the student is successfully logged in using FaceID on the student screen of our app.
-                                st.session_state.student_data = response_data  # here we are setting this student_data variable in session state to the response_data 
+                                st.session_state.student_data = response_data[0]  # here we are setting this student_data variable in session state to the response_data[0] which is dictionary at 0th index which contains the details of the student logged in 
                                 st.toast(f"Profile Created!, Hi {new_name}")
                                 time.sleep(1)
                                 st.rerun()   # as here state is changing, so we need to rerun it
