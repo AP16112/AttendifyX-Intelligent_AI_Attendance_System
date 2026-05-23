@@ -114,7 +114,7 @@ def student_dashboard():
 
         # here we are creating a unenroll button for each subject, so that it can execute the uneroll query to unenroll the student from any subject
         def unenroll_button():
-            if st.button("Unenroll from this course", type='tertiary', width='stretch', icon=':material/delete_forever:'):
+            if st.button("Unenroll from this course", type='tertiary', width='stretch', icon=':material/delete_forever:', key=f"unenroll_{sid}"):   # Now each unenroll btn have unique key per subject
                 unenroll_student_from_subject(student_id, sid)
                 st.toast(f"Unenrolled from {sub['name']} successfully! ")
                 st.rerun()    # here we are rerunning so that whole page gets reloaded

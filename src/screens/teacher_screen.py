@@ -220,46 +220,47 @@ def teacher_tab_take_attendance():
                 enrolled_students = enrolled_res.data    # it will give all the students enrolled in this subject
 
                 if not enrolled_students:   # no students present for this subject
-                    st.warning("No students enrolled in this cource")
-                else:
-                    # it means that if students present in this course
+                    st.warning("No students enrolled in this course")
+                    return   # stop here, don't continue
+                
 
-                    # currently we are taking both to me empty
-                    results, attendance_to_log = [], []
+                # but if students present in this course
+                # currently we are taking both to me empty
+                results, attendance_to_log = [], []
 
-                    # it is used to mark the timestamp for attendace taken
-                    current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-                    # Here datetime.now() → gets the current local date and time.
-                    # And .strftime(...) → converts it into a formatted string.
-                    # %Y → 4‑digit year (e.g., 2026).
-                    # %m → 2‑digit month. And %d → 2‑digit day.
-                    # T → literal character T (common in ISO 8601 formats).
-                    # %H:%M:%S → hour, minute, second in 24‑hour format.
+                # it is used to mark the timestamp for attendace taken
+                current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                # Here datetime.now() → gets the current local date and time.
+                # And .strftime(...) → converts it into a formatted string.
+                # %Y → 4‑digit year (e.g., 2026).
+                # %m → 2‑digit month. And %d → 2‑digit day.
+                # T → literal character T (common in ISO 8601 formats).
+                # %H:%M:%S → hour, minute, second in 24‑hour format.
 
-                    for node in enrolled_students:
-                        # Each node represents an enrollment record for this subject.
-                        # The 'students' field inside node contains the actual student details.
-                        student = node['students']
+                for node in enrolled_students:
+                    # Each node represents an enrollment record for this subject.
+                    # The 'students' field inside node contains the actual student details.
+                    student = node['students']
 
-                        # Retrieve the list of photo sources where this student_id was detected.
-                        # Returns a list of photo labels if found, or an empty list if not detected.
-                        sources = all_detected_ids.get(int(student['student_id']), [])
+                    # Retrieve the list of photo sources where this student_id was detected.
+                    # Returns a list of photo labels if found, or an empty list if not detected.
+                    sources = all_detected_ids.get(int(student['student_id']), [])
 
-                        is_present = len(sources) > 0    # if length of sources > 0, then it means that this student is present in more than 1 photos uploaded or given by user. So it means that student is present
+                    is_present = len(sources) > 0    # if length of sources > 0, then it means that this student is present in more than 1 photos uploaded or given by user. So it means that student is present
 
-                        results.append({
-                            "Name": student['name'],
-                            "ID": student['student_id'],
-                            "Source": ", ".join(sources) if is_present else "-",       #If the student was detected (is_present == True), join all photo labels in sources into a single string (e.g., "Photo 1, Photo 3"). If not detected, store a dash ("-") to indicate absence.
-                            "Status": "✅ Present" if is_present else "❌ Absent"
-                        })
+                    results.append({
+                        "Name": student['name'],
+                        "ID": student['student_id'],
+                        "Source": ", ".join(sources) if is_present else "-",       #If the student was detected (is_present == True), join all photo labels in sources into a single string (e.g., "Photo 1, Photo 3"). If not detected, store a dash ("-") to indicate absence.
+                        "Status": "✅ Present" if is_present else "❌ Absent"
+                    })
 
-                        attendance_to_log.append({
-                            'student_id': student['student_id'],
-                            'subject_id': selected_subject_id,
-                            'timestamp': current_timestamp,
-                            'is_present': bool(is_present)
-                        })
+                    attendance_to_log.append({
+                        'student_id': student['student_id'],
+                        'subject_id': selected_subject_id,
+                        'timestamp': current_timestamp,
+                        'is_present': bool(is_present)
+                    })
 
                 # Display the attendance results in a dialog and log them.
                 # Convert results into a DataFrame for tabular view,
@@ -346,6 +347,7 @@ def teacher_tab_attendance_records():
     records = get_attendance_for_teacher(teacher_id)
 
     if not records:     # it no records exists
+        st.warning("No Attendance Records exists!, Please take attendance first")
         return   # we will simply return i.e stop the further flow
     
     # But if some records found, then we need to proceed further
