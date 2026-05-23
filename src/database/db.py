@@ -141,6 +141,7 @@ def get_student_attendance(student_id):
     # eq('student_id', student_id) → filters rows so only attendance records belonging to the given student_id are returned
     # execute() → runs the query and returns the result (data + error if any)
     response = supabase.table('attendance_logs').select('*, subjects(*)').eq('student_id', student_id).execute()
+    # Here actually inner join is performing 
 
     # This query retrieves all attendance records for a particular student from the attendance_logs table, and at the same time pulls in the full details of each subject from the subjects table.
     # The result is a combined dataset showing the student's attendance history along with subject information.
@@ -152,3 +153,19 @@ def create_attendance(logs):
     response = supabase.table('attendance_logs').insert(logs).execute()
 
     return response.data  # it will return the data of the newly added attendance 
+
+
+# this fn will give us the attendance records for particular teacher
+def get_attendance_for_teacher(teacher_id):
+    # Query the 'attendance_logs' table and perform an inner join with the 'subjects' table.
+    # Note: 'attendance_logs' does not store teacher_id directly, so we must use the relationship with 'subjects' to filter by teacher.
+    # select('*, subjects!inner(*)') → retrieves all columns from attendance_logs (*) and includes full subject details via inner join.
+    # eq('subjects.teacher_id', teacher_id) → filters results to only those attendance records linked to subjects taught by the specified teacher_id.
+    # execute() → runs the query and returns the response object (containing data and any error information).
+    response = supabase.table('attendance_logs').select('*, subjects!inner(*)').eq('subjects.teacher_id', teacher_id).execute()
+
+
+    # This query returns all attendance records for subjects taught by a given teacher,
+    # combining each attendance entry with its corresponding subject information.
+    return response.data   # returns a list of attendance records enriched with subject details
+

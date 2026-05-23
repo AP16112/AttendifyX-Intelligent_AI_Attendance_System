@@ -9,7 +9,7 @@ from src.components.footer import footer_dashboard
 from src.components.subject_card import subject_card
 from src.ui.base_layout import  style_base_layout, style_background_dashboard
 
-from src.database.db import check_teacher_exists, create_teacher, teacher_login, get_teacher_subjects
+from src.database.db import check_teacher_exists, create_teacher, teacher_login, get_teacher_subjects, get_attendance_for_teacher
 from src.components.dialog_create_subject import create_subject_dialog
 from src.components.dialog_share_subject import share_subject_dialog
 from src.components.dialog_add_photo import add_photos_dialog
@@ -328,7 +328,7 @@ def teacher_tab_manage_subjects():
 
 
 
-
+# THis fn will show the attendance records for each teacher for each of the subjects teacher taught
 def teacher_tab_attendance_records():
     # st.header("Attendance Records")    # it just uses the default h2 tag 
     # ---------OR------------
@@ -339,6 +339,73 @@ def teacher_tab_attendance_records():
         """,
         unsafe_allow_html=True
     ) 
+
+    teacher_id = st.session_state.teacher_data['teacher_id']
+
+    # here this get_attendance_for_teacher() will run a database query to get us the teacher attendance records
+    records = get_attendance_for_teacher(teacher_id)
+
+    if not records:     # it no records exists
+        return   # we will simply return i.e stop the further flow
+    
+    # But if some records found, then we need to proceed further
+    data = []
+
+    for r in records:
+        ts = r.get('timestamp')    # here we are getting the timestamps
+
+        data.append({
+            # Extract the timestamp value and normalize it by removing the milliseconds part.
+            # Reason: attendance_logs timestamps often include fractional seconds (e.g., "2026-05-23 09:57:10.123456+00").
+            # When grouping records by timestamp, these millisecond differences would cause identical events to be treated as separate groups.
+            # ts.split(".")[0] → splits the timestamp string at the '.' and keeps only the portion before it (date + time up to seconds).
+            # if ts else None → ensures that if ts is missing or None, we safely store None instead of raising an error.
+            "ts_group": ts.split(".")[0] if ts else None,
+            # Format the timestamp into a human‑readable string for display.
+            # datetime.fromisoformat(ts) → parses the ISO 8601 timestamp string (e.g., "2026-05-23 09:57:10+00") into a Python datetime object.
+            # strftime("%Y-%m-%d %I:%M %p") → converts the datetime into the format "YYYY-MM-DD HH:MM AM/PM".
+            # Example: "2026-05-23 09:57:10+00" → "2026-05-23 09:57 AM".
+            # if ts else "N/A" → ensures that if ts is None or missing, we store "N/A" (Not Available) instead of raising an error.
+            "Time": datetime.fromisoformat(ts).strftime("%Y-%m-%d %I:%M %p") if ts else "N/A",
+            "Subject": r['subjects']['name'],
+            "Subject Code": r['subjects']['subject_code'],
+            "is_present": bool(r.get('is_present', False))
+        })
+
+    # Now we are creating the dataframe from this data, so that we can apply easily the aggregates function on this
+    df = pd.DataFrame(data)
+
+
+    # Build a summary DataFrame by grouping and aggregating attendance data.
+    # df.groupby(['ts_group', 'Time', 'Subject', 'Subject Code']) →
+    #     groups the records based on timestamp (normalized without milliseconds), formatted time string,
+    #     subject name, and subject code. Each unique combination forms a group.
+    # .agg(...) →
+    #     applies aggregation functions to each group:
+    #       Present_count = ('is_present', 'sum') → counts how many students are marked present
+    #       Total_Count   = ('is_present', 'count') → counts total attendance records in the group
+    # .reset_index() →
+    #     flattens the grouped index back into columns so the result is a clean DataFrame.
+    summary = (
+        df.groupby(['ts_group', 'Time', 'Subject', 'Subject Code']).agg(
+            Present_Count = ('is_present', 'sum'),     # so if is_present = 1, then only it will get added in sum
+            Total_Count = ('is_present', 'count')      # so even if is_present is 0 or 1, it gets counted
+        ).reset_index()
+    )
+    # so if 4 students have enrolled, & in photo only 2 are present, then Present_count give 2 and Total_count gives 4 actually
+
+    # Adding this extra column in summary df
+    summary['Attendance Stats'] = (
+        "✅ " + summary['Present_Count'].astype(str) + " /" + summary['Total_Count'].astype(str) + ' Students'
+    )
+
+    # Prepare the final DataFrame for display by sorting and selecting relevant columns.
+    # summary.sort_values(by='ts_group', ascending=False) → sorts the grouped attendance summary in descending order of ts_group (latest timestamps first).
+    # [['Time', 'Subject', 'Subject Code', 'Attendance Stats']] → selects only the key columns needed for display: formatted time, subject name, subject code, and attendance statistics.
+    # The result is a clean, ordered DataFrame ready to be shown in the dashboard.
+    display_df = ( summary.sort_values(by='ts_group', ascending=False)[['Time', 'Subject', 'Subject Code', 'Attendance Stats']] )
+
+    st.dataframe(display_df, width='stretch', hide_index=True)
 
 
 
