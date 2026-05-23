@@ -12,6 +12,17 @@ from src.ui.base_layout import  style_base_layout, style_background_dashboard
 from src.database.db import check_teacher_exists, create_teacher, teacher_login, get_teacher_subjects
 from src.components.dialog_create_subject import create_subject_dialog
 from src.components.dialog_share_subject import share_subject_dialog
+from src.components.dialog_add_photo import add_photos_dialog
+from src.components.dialog_attendance_results import attendance_result_dialog
+
+
+import numpy as np
+import pandas as pd
+from src.database.config import supabase  # here we are importing the instance of supabase client, which we have created in the config.py file, so that we can use that client to interact with our supabase database in our project
+from src.pipelines.face_pipeline import predict_attendance
+
+from datetime import datetime   
+
 
 def teacher_screen():
 
@@ -94,7 +105,10 @@ def teacher_dashboard():
 
 
 
+
 def teacher_tab_take_attendance():
+    teacher_id = st.session_state.teacher_data['teacher_id']
+
     # st.header("Take AI Attendance")    # it just uses the default h2 tag 
     # ---------OR------------
     st.markdown(f"""
@@ -104,6 +118,160 @@ def teacher_tab_take_attendance():
         """,
         unsafe_allow_html=True
     ) 
+
+
+    # Now we will create a state in session_state for storing all the attendance images currently we have
+    if 'attendance_images' not in st.session_state:
+        st.session_state.attendance_images = []    # at first this attendance_images state will not have any image inside it i.e empty array
+
+    subjects = get_teacher_subjects(teacher_id)    # it will give all the subjects of this teacher_id teacher
+
+    if not subjects:   # if no subjects exists
+        st.warning("You haven't created any subjects yet! Please create one to begin!")
+        return    # this return is there to stop execution early if no subjects exist, so the rest of the function doesn’t run with invalid or missing data.
+    
+    # But if subjects exists, then we will show options of these subjects
+    # Create a mapping of "SubjectName - SubjectCode" → subject_id
+    subject_options = {f"{s['name']} - {s['subject_code']}": s['subject_id'] for s in subjects}
+
+    # Create two columns with a 3:1 width ratio.
+    # col1 takes up three parts, col2 takes up one part.
+    # Align both columns' content to the bottom for consistent layout.
+    # Here vertical_alignment='bottom' → ensures that the content inside both columns aligns at the bottom, which is useful if one column has more content than the other.
+    col1, col2 = st.columns([3,1], vertical_alignment='bottom')
+
+    with col1:
+        # st.selectbox() in Streamlit is used to create a dropdown menu where users can select one option from a list.
+        # In this we need to pass a list of options also
+        selected_subject_label = st.selectbox('Select Subject', options=list(subject_options.keys()))
+        # The string label the user picked gets stored in selected_subject_label.
+
+    with col2:
+        if st.button('Add Photos', type='primary', icon=":material/photo_prints:", width='stretch'):
+            add_photos_dialog()
+
+        
+    # Now we will find the details of this selected subject
+    selected_subject_id = subject_options[selected_subject_label]
+
+    st.divider()
+
+    # now if photos present inside this attendance_images then we will firstly show all those photos    
+    if st.session_state.attendance_images:
+        # st.header("Added Photos")    # it just uses the default h2 tag 
+        # ---------OR------------
+        st.markdown(f"""
+            <div style='display: flex;  align-items: center;  justify-content: center;'>
+                <h2 style='color: #1e1e1e;  text-align: center'> Added Photos </h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Create a gallery layout with 4 columns.
+        gallery_cols = st.columns(4)    # list of 4 columns
+
+        # Loop through all attendance images stored in session_state. And Place each image into one of the 4 columns, cycling across columns using idx % 4 to distribute images evenly.
+        for idx, img in enumerate(st.session_state.attendance_images):
+            with gallery_cols[idx % 4]:
+                st.image(img, width='stretch', caption=f"Photo {idx+1}")   # it will display each attendance image inside the gallery layout
+
+    # here we will check whether photos exists or not firstly
+    has_photos = bool(st.session_state.attendance_images)
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        if st.button('Clear all photos', width='stretch', type='tertiary', icon=":material/delete:", disabled= not has_photos):
+            st.session_state.attendance_images = []
+            st.rerun()   # to manage the changes visible
+
+    with c2:
+        if st.button('Run Face Analysis', width='stretch', type='secondary', icon=":material/analytics:", disabled= not has_photos):
+            # here we are adding this spinner till deep scaning of these photos is happening
+            with st.spinner("Deep scanning classroom photos..."):
+                all_detected_ids = {}   
+
+                for idx, img in enumerate(st.session_state.attendance_images):
+                    # here we will firstly convert the image into RGB, so that we can easily process it
+                    # Although we haven't convert the image to RGB during student register using camera, but if we want we can also do this at that time also as it makes things easier for our ML model
+                    # All these images inside attendance_images are in proper format which we stored using Image.open(), so no need to do that again here
+                    # here we are converting these images to RGB because some images also present in RGBA & some in RBG, which can cause problems, that's why we are converting all of them to RGB only
+                    img_numpy = np.array(img.convert('RGB'))
+
+                    # Now we will predict the attendace for these photos
+                    detected, _, _ = predict_attendance(img_numpy)    # here _, _ means that we don't have need of these two values, so we are just ignoring them
+
+                    if detected:  # is some student attendance detected
+                        for sid in detected.keys():
+                            student_id = int(sid)     # # Convert the string key (sid) into an integer student_id
+
+                            # setdefault(student_id, []) → if student_id isn’t already a key in all_detected_id, it creates one with an empty list.
+                            # .append(f"Photo {idx+1}") → adds the photo label to that student’s list, so you know which photos were recognized as them.
+                            all_detected_ids.setdefault(student_id, []).append(f"Photo {idx+1}")
+
+                
+                # it will give all the students enrolled in this current subject
+                enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('subject_id', selected_subject_id).execute()
+                # Query the 'subject_students' table and also join related data from the 'subjects' table.
+                # select('*, subjects(*)') → fetches all columns from subject_students (*) and expands the subjects table (*) for each matching record
+                # eq('subject_id', selected_subject_id) → filters rows so only those belonging to the given selected_subject_id are returned
+
+                enrolled_students = enrolled_res.data    # it will give all the students enrolled in this subject
+
+                if not enrolled_students:   # no students present for this subject
+                    st.warning("No students enrolled in this cource")
+                else:
+                    # it means that if students present in this course
+
+                    # currently we are taking both to me empty
+                    results, attendance_to_log = [], []
+
+                    # it is used to mark the timestamp for attendace taken
+                    current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                    # Here datetime.now() → gets the current local date and time.
+                    # And .strftime(...) → converts it into a formatted string.
+                    # %Y → 4‑digit year (e.g., 2026).
+                    # %m → 2‑digit month. And %d → 2‑digit day.
+                    # T → literal character T (common in ISO 8601 formats).
+                    # %H:%M:%S → hour, minute, second in 24‑hour format.
+
+                    for node in enrolled_students:
+                        # Each node represents an enrollment record for this subject.
+                        # The 'students' field inside node contains the actual student details.
+                        student = node['students']
+
+                        # Retrieve the list of photo sources where this student_id was detected.
+                        # Returns a list of photo labels if found, or an empty list if not detected.
+                        sources = all_detected_ids.get(int(student['student_id']), [])
+
+                        is_present = len(sources) > 0    # if length of sources > 0, then it means that this student is present in more than 1 photos uploaded or given by user. So it means that student is present
+
+                        results.append({
+                            "Name": student['name'],
+                            "ID": student['student_id'],
+                            "Source": ", ".join(sources) if is_present else "-",       #If the student was detected (is_present == True), join all photo labels in sources into a single string (e.g., "Photo 1, Photo 3"). If not detected, store a dash ("-") to indicate absence.
+                            "Status": "✅ Present" if is_present else "❌ Absent"
+                        })
+
+                        attendance_to_log.append({
+                            'student_id': student['student_id'],
+                            'subject_id': selected_subject_id,
+                            'timestamp': current_timestamp,
+                            'is_present': bool(is_present)
+                        })
+
+                # Display the attendance results in a dialog and log them.
+                # Convert results into a DataFrame for tabular view,
+                # and pass attendance_to_log for backend storage.
+                attendance_result_dialog(pd.DataFrame(results), attendance_to_log)  
+
+    with c3:
+        if st.button('Use Voice Attendance', type='primary', width='stretch', icon=":material/mic:"):
+            voice_attendance_dialog(selected_subject_id)
+
+
+
 
 
 def teacher_tab_manage_subjects():

@@ -111,7 +111,7 @@ def enroll_student_to_subject(student_id, subject_id):
     # so it will add this data object to this 'subject_students' table which means that this student gets enrolled in this subject
     response = supabase.table('subject_students').insert(data).execute()
 
-    response.data  # it will return the data of the newly created subject student record
+    return response.data  # it will return the data of the newly created subject student record
 
 
 # so this fn student will unenroll a student from some subject
@@ -119,7 +119,7 @@ def unenroll_student_from_subject(student_id, subject_id):
     # so it will delete that row from this 'subject_students' table which have this student id and subject id
     response = supabase.table('subject_students').delete().eq('student_id', student_id).eq('subject_id', subject_id).execute()
 
-    response.data  # it will return the data of this deleted record
+    return response.data  # it will return the data of this deleted record
 
 
 # this fn will return the list of all the subjects this particular student enrolled in
@@ -145,3 +145,10 @@ def get_student_attendance(student_id):
     # This query retrieves all attendance records for a particular student from the attendance_logs table, and at the same time pulls in the full details of each subject from the subjects table.
     # The result is a combined dataset showing the student's attendance history along with subject information.
     return response.data   # returns a list of attendance records with full subject details
+
+
+# This fn is used to add the attendance to the attendance_logs table
+def create_attendance(logs):
+    response = supabase.table('attendance_logs').insert(logs).execute()
+
+    return response.data  # it will return the data of the newly added attendance 
