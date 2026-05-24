@@ -139,10 +139,6 @@ def style_base_layout():
             div[data-testid="stSpinner"] div[data-testid="stMarkdownContainer"] p {
                 color: black !important;
             }
-                
-            div[data-testid="stMarkdownContainer"] * {
-                color:black !important;
-            }
                         
         </style>
         """,
