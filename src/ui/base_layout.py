@@ -130,6 +130,11 @@ def style_base_layout():
                 color: black !important;
             }
                 
+            /* Target the label of text_input */
+            div[data-testid="stTextInput"] label {
+                color: black !important;
+            }
+                
         </style>
         """,
         unsafe_allow_html=True
