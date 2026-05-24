@@ -135,14 +135,13 @@ def style_base_layout():
                 color: black !important;
             }
                 
-            /* Target the label above the camera input */
-            div[data-testid="stCameraInput"] label {
+            /* Target the spinner text */
+            div[data-testid="stSpinner"] div[data-testid="stMarkdownContainer"] p {
                 color: black !important;
             }
-
-            /* Target the instruction text inside the camera input */
-            div[data-testid="stCameraInput"] div[data-testid="stMarkdownContainer"] p {
-                color: black !important;
+                
+            div[data-testid="stMarkdownContainer"] * {
+                color:black !important;
             }
                         
         </style>
