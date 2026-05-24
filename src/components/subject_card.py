@@ -38,8 +38,25 @@ def subject_card(name, code, section, stats=None, footer_callback=None):
         #   html += '<div style="display: flex;">'
         html += '<div style="display: flex;  gap: 8px; flex-wrap: wrap;">'
 
+
+        # Define the CSS once
+        st.markdown("""
+            <style>
+                .stat-box {
+                    background-color: #EB459E10;
+                    padding: 5px 12px;
+                    border-radius: 12px;
+                    font-size: 0.9rem;
+                }
+                .stat-box b {
+                    color: black !important;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
         for icon, label, value in stats:
-            html += f'<div style="background-color: #EB459E10; color: black !important; padding:5px 12px; border-radius: 12px; font-size: 0.9rem;">{icon} <span style="color:black !important;"><b>{value}</b> {label}</span></div>'
+            # html += f'<div style="background-color: #EB459E10; padding:5px 12px; border-radius: 12px; font-size: 0.9rem;">{icon} <b>{value}</b> {label}</div>'
+            html += f'<div class="stat-box">{icon} <b>{value}</b> {label}</div>'
 
         html += "</div>"
 
