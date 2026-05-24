@@ -47,6 +47,7 @@ def subject_card(name, code, section, stats=None, footer_callback=None):
                     padding: 5px 12px;
                     border-radius: 12px;
                     font-size: 0.9rem;
+                    color: black;  
                 }
                 .stat-box b {
                     color: black !important;
