@@ -59,7 +59,7 @@ def teacher_dashboard():
             unsafe_allow_html=True
         ) 
 
-        if st.button("Logout", type='secondary', key='loginbackbtn', shortcut="control+backspace"):
+        if st.button("Logout", type='secondary', key='loginbackbtn', shortcut="control+backspace", width='stretch'):
             st.session_state['is_logged_in'] = False  
             del st.session_state.teacher_data       # This removes the key teacher_data (and its value) from the session state.
             # After this line runs, trying to access st.session_state.teacher_data will raise a KeyError because it no longer exists.
