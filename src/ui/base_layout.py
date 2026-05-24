@@ -135,6 +135,16 @@ def style_base_layout():
                 color: black !important;
             }
                 
+            /* Target the label above the camera input */
+            div[data-testid="stCameraInput"] label {
+                color: black !important;
+            }
+
+            /* Target the instruction text inside the camera input */
+            div[data-testid="stCameraInput"] div[data-testid="stMarkdownContainer"] p {
+                color: black !important;
+            }
+                        
         </style>
         """,
         unsafe_allow_html=True
