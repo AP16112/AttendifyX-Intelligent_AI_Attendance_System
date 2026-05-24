@@ -126,6 +126,10 @@ def style_base_layout():
                 transform: scale(1.05);
             }
                 
+            div[data-testid="stSelectbox"] label {
+                color: black !important;
+            }
+                
         </style>
         """,
         unsafe_allow_html=True
