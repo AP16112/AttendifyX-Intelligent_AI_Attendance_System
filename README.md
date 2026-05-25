@@ -229,6 +229,32 @@ This pipeline is used in:
 - student face login
 - teacher face attendance flow
 
+### Why `SVC` Is Used In This Project
+
+This project uses `SVC` from `scikit-learn` because the face recognition step works on **face embeddings**, not raw images. Once Dlib converts a face into a numeric embedding vector, the model only needs to classify that vector as one of the registered students.
+
+`SVC` is a practical choice here because:
+
+- it performs well on high-dimensional embedding vectors
+- it works reliably on small-to-medium sized datasets
+- it is simple to train and integrate into a Streamlit-based project
+- it can separate student classes effectively using a linear decision boundary
+- `class_weight='balanced'` helps reduce bias when some students may have more samples than others
+
+In short, Dlib handles the face feature extraction, and `SVC` is used to classify the resulting embeddings into student identities.
+
+### Why Other Models Were Not Used
+
+Other models can also be used for face recognition projects, but `SVC` was chosen here because it provides a good balance between simplicity, performance, and ease of integration for this project.
+
+- **KNN** is a common choice for face embeddings and can work well, but prediction becomes slower as the number of registered samples grows because it compares against stored examples directly.
+- **Random Forest** is generally less suitable for dense face embedding vectors, where margin-based or distance-based methods usually perform better.
+- **Logistic Regression** can be used for classification, but `SVC` is often more effective for separating embedding-based classes when the dataset is relatively small.
+- **Neural Networks** would add extra complexity, require more tuning, and are unnecessary here because Dlib already provides strong face embeddings.
+- **Naive Bayes** is not a good fit because face embedding features do not satisfy its simplifying assumptions well.
+
+For a lightweight Streamlit application with biometric embeddings and a relatively small student dataset, `SVC` is a practical and maintainable choice.
+
 ## Voice Recognition Pipeline
 
 The voice recognition workflow is implemented in `src/pipelines/voice_pipeline.py`.
