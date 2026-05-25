@@ -1,5 +1,12 @@
 # AttendifyX: Intelligent AI Attendance System
 
+![Platform](https://img.shields.io/badge/Platform-Web-blue)
+![Frontend](https://img.shields.io/badge/Frontend-Streamlit-red)
+![Backend](https://img.shields.io/badge/Backend-Supabase-green)
+![Language](https://img.shields.io/badge/Language-Python%203.11-yellow)
+![AI](https://img.shields.io/badge/AI-Face%20%26%20Voice%20Recognition-purple)
+![Status](https://img.shields.io/badge/Status-Live-success)
+
 AttendifyX is an AI-powered attendance management application that automates classroom attendance using face recognition and voice recognition. It is built with `Streamlit` for the user interface, `Supabase` for backend storage, and machine learning pipelines for biometric identification.
 
 The project is designed as a practical demonstration of how AI can be used in an education workflow to reduce manual attendance work, organize subject-wise records, and provide separate student and teacher experiences.
