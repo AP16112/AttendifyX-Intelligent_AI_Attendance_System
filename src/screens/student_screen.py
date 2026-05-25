@@ -183,6 +183,7 @@ def student_screen():
         with st.spinner("AI is scanning..."):
             detected, all_ids, num_faces = predict_attendance(img)   # here we are calling this predict_attendance() function and passing the image taken from camera input as an argument to this function, so that it can process that image for facial recognition and attendance marking, so here we will write the code for facial recognition and attendance marking inside this predict_attendance() function, so that it can process the image taken from camera input for facial recognition and attendance marking
 
+            st.write("DEBUG:", {"num_faces": num_faces, "detected": detected, "all_ids": all_ids})
             if num_faces == 0:  # if no face is detected in the image taken from camera input, then we will show this message to the student
                 st.warning("Face not found!")
             elif num_faces > 1:   # if multiple faces are detected in the image taken
