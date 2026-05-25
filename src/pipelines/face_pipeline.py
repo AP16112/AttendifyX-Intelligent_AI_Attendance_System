@@ -113,6 +113,18 @@ def get_trained_model():
     if len(X) == 0:  # if no student embedding found i.e there is no student record in the database with the face_embedding field, then we will return None, which means that we cannot train the model as there is no student record in the database with the face_embedding field, so here we are checking that if there is no student record in the database with the face_embedding field, then we will return None, which means that we cannot train the model as there is no student record in the database with the face_embedding field.
         return 0
 
+    # Get all unique student labels from y (remove duplicates using set, then convert back to list and sort)
+    all_students = sorted(list(set(y)))
+
+    # If only one unique student exists, do not try to use SVM.
+    if len(all_students) < 2:
+        return {
+            'clf': None,
+            'X': X,
+            'y': y,
+            'single_student_mode': True
+        }
+
 
     classifier = SVC(kernel='linear', probability=True, class_weight='balanced')  # here we are creating an instance of SVC classifier with linear kernel and probability=True, which will allow us to get the probability of the prediction for each class, so here we will use this SVC classifier for classifying the faces based on the embeddings vector and then we will mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
     # here class_weight='balanced' is used to handle the class imbalance problem in our dataset, as there may be some students with more images of their faces in the database than other students, so by using class_weight='balanced', it will automatically adjust the weights of the classes based on the number of samples in each class, so that it will give more importance to the classes with less samples and less importance to the classes with more samples, which will help in improving the accuracy of our SVM classifier model for classifying the faces based on the embeddings vector and then we will mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
@@ -125,7 +137,7 @@ def get_trained_model():
         pass   # if there is any error during model training, then we will just pass it and we will not do anything, as there may be some cases where we cannot train the model due to some reason like if there is only one student record in the database with the face_embedding field, then it will give an error while training the SVM classifier model as SVM requires at least 2 classes for training, so here we are using try-catch to handle such errors and to print the error message in the console, so that we can debug the issue and fix it, so here we will use this try-catch block for training our SVM classifier model for classifying the faces based on the embeddings vector and then we will mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
 
 
-    return {'clf': classifier, 'X': X, 'y': y}  # here we are returning this dictionary which contains the trained SVM classifier model in the 'clf' key and the X list which contains the embeddings vector for the faces of all the students present in the database in the 'X' key and the y list which contains the student_id for all the students present in the database in the 'y' key, so here we will use this dictionary for classifying the faces based on the embeddings vector and then we will mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
+    return {'clf': classifier, 'X': X, 'y': y, 'single_student_mode': False}  # here we are returning this dictionary which contains the trained SVM classifier model in the 'clf' key and the X list which contains the embeddings vector for the faces of all the students present in the database in the 'X' key and the y list which contains the student_id for all the students present in the database in the 'y' key, so here we will use this dictionary for classifying the faces based on the embeddings vector and then we will mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
 
 
 # this fn we will use when some new student record is added in the database with the face_embedding field, so that we can train our SVM classifier model again with the new student record added in the database, so here we will use this fn for training our SVM classifier model again with the new student record added in the database, so that we can classify the faces based on the embeddings vector and then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
@@ -156,14 +168,35 @@ def predict_attendance(class_image_np):
 
     all_students = sorted(list(set(y_train)))  # here we are getting the list of all the unique student_id from the y_train list which contains the student_id for all the students present in the database, so here we will use this list of unique student_id for classifying the faces based on the embeddings vector and then we will mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
 
+    single_student_threshold = 0.42
+
     for encoding in encodings:
-        if len(all_students) >= 2:
-            # here in this classifier.predict([encoding])[0], highest score is at index 0 because we are using linear kernel for SVM classifier, so here we are using this classifier.predict() function to predict the student_id for the face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
-            predicted_id = int(classifier.predict([encoding])[0])  # here we are using this trained SVM classifier model to predict the student_id for the face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
-            # here this classifier.predict() function will return the predicted student_id for the face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
-            # this .predict() fn will actually return score for each class but [0] will give the index of the class with the highest score, which will be the predicted student_id for that face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
-        else:     # if there is only one student record in the database with the face_embedding field
-            predicted_id = int(all_students[0])  # student_id of that single student
+        # Case 1: only one registered student in DB
+        if model_data.get("single_student_mode"):
+            predicted_id = int(all_students[0])
+            student_embedding = X_train[0]
+
+            best_match_score = np.linalg.norm(student_embedding - encoding)
+
+            if best_match_score < single_student_threshold:
+                detected_student[predicted_id] = True
+
+            continue
+
+
+        # Case 2: multiple students registered
+        predicted_id = int(classifier.predict([encoding])[0])
+
+
+        # if len(all_students) >= 2:
+        #     # here in this classifier.predict([encoding])[0], highest score is at index 0 because we are using linear kernel for SVM classifier, so here we are using this classifier.predict() function to predict the student_id for the face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
+        #     predicted_id = int(classifier.predict([encoding])[0])  # here we are using this trained SVM classifier model to predict the student_id for the face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
+        #     # here this classifier.predict() function will return the predicted student_id for the face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
+        #     # this .predict() fn will actually return score for each class but [0] will give the index of the class with the highest score, which will be the predicted student_id for that face detected in the group photo based on the embeddings vector for that face, so here we will use this predicted student_id for marking the attendance of that student whose face is matched with the embeddings vector stored in the database.
+        # else:     # if there is only one student record in the database with the face_embedding field
+        #     predicted_id = int(all_students[0])  # student_id of that single student
+
+
 
         # now this predicted_id, we will find its corresponding embeddings
         # as we know that for a single student, both its embeddings and id will be present at the same index in the X_train and y_train list respectively, so here we will use this predicted_id to find its corresponding embeddings from the X_train list, so that we can calculate the distance between this embeddings vector and the embeddings vector for the face detected in the group photo, so that we can check that if the distance is less than a certain threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
@@ -172,10 +205,10 @@ def predict_attendance(class_image_np):
         # As here from the classifier model, we are getting the predicted student_id for the face detected in the group photo based on the embeddings vector for that face, but we also need to check that if this predicted student_id is actually a match for that face detected in the group photo based on the embeddings vector for that face, so here we will calculate the distance between this embeddings vector and the embeddings vector for the face detected in the group photo using the L2 norm (Euclidean distance) which is calculated using np.linalg.norm() function of numpy library, so here we will use this distance to check that if the distance is less than a certain threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
         best_match_score = np.linalg.norm(student_embedding - encoding)  # here we are calculating the distance between this embeddings vector and the embeddings vector for the face detected in the group photo using the L2 norm (Euclidean distance) which is calculated using np.linalg.norm() function of numpy library, so here we will use this distance to check that if the distance is less than a certain threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
 
-        resemblance_threshold = 0.6 # here we are setting this resemblance_threshold as 0.6, which means that if the distance between the embeddings vector for the face detected in the group photo and the embeddings vector for that predicted student_id is less than 0.6, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database, so here we will use this resemblance_threshold to check that if the distance is less than this threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
+        multi_student_resemblance_threshold = 0.6 # here we are setting this resemblance_threshold as 0.6, which means that if the distance between the embeddings vector for the face detected in the group photo and the embeddings vector for that predicted student_id is less than 0.6, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database, so here we will use this resemblance_threshold to check that if the distance is less than this threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
         # we take this as 0.6 because in general, the distance between the embeddings vector for the face detected in the group photo and the embeddings vector for that predicted student_id should be less than 0.6 for a good match, so here we are setting this resemblance_threshold as 0.6, which means that if the distance between the embeddings vector for the face detected in the group photo and the embeddings vector for that predicted student_id is less than 0.6, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database, so here we will use this resemblance_threshold to check that if the distance is less than this threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
 
-        if best_match_score < resemblance_threshold:  # here we are checking that if the distance between the embeddings vector for the face detected in the group photo and the embeddings vector for that predicted student_id is less than this resemblance_threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database, so here we will use this resemblance_threshold to check that if the distance is less than this threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
+        if best_match_score < multi_student_resemblance_threshold:  # here we are checking that if the distance between the embeddings vector for the face detected in the group photo and the embeddings vector for that predicted student_id is less than this resemblance_threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database, so here we will use this resemblance_threshold to check that if the distance is less than this threshold, then we can mark the attendance of that student whose face is matched with the embeddings vector stored in the database.
             detected_student[predicted_id] = True
 
     return detected_student, all_students, len(encodings)  # here we are returning this detected_student dictionary which contains the student_id for the students whose faces are detected in the group photo as keys and True as values and the all_students list which contains the list of all the unique student_id from the y_train list which contains the student_id for all the students present in the database and the total number of faces detected in the group photo i.e len(encodings), so that we can use this information for marking the attendance of students using facial recognition, so here we will use this information for marking the attendance of students using facial recognition.
